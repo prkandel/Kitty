@@ -66,11 +66,10 @@ function Game(Number_Of_Players,Per_Player_Card){
 				indexOfGreatest = i;
 			}
 		}
-		console.log("minirankArray", minirankArray);
 		if(secondGreat == greatest)
-			console.log("no winner roundOne");
+			return -1;
 		else
-			console.log("winner roundOne",indexOfGreatest);
+			return indexOfGreatest+1;
 
 
 	}
@@ -88,11 +87,10 @@ function Game(Number_Of_Players,Per_Player_Card){
 				indexOfGreatest = i;
 			}
 		}
-		console.log("minirankArray", minirankArray);
 		if(secondGreat == greatest)
-			console.log("no winner roundTwo");
+			return -1;
 		else
-			console.log("winner roundTwo",indexOfGreatest);
+			return indexOfGreatest+1;
 
 
 	}
@@ -110,11 +108,10 @@ function Game(Number_Of_Players,Per_Player_Card){
 				indexOfGreatest = i;
 			}
 		}
-		console.log("minirankArray", minirankArray);
 		if(secondGreat == greatest)
-			console.log("no winner Three");
+			return -1;
 		else
-			console.log("winner roundthree",indexOfGreatest);
+			return indexOfGreatest+1;
 
 
 	}

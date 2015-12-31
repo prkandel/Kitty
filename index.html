@@ -7,9 +7,16 @@
 	
 	</head>
 	<body>
+		<style>
+			*{
+				padding: 0px;
+				margin: 0px;
+			}
+			#game1{
+				margin: 0 auto;
+			}
+		</style>
 		<div id = "game1"></div>
-
-
 
 		 <script src = "js/card.js"></script>
 		 <script src = "js/deck.js"></script>
@@ -21,13 +28,8 @@
 		 <script src = "js/gameWindow.js"></script>
 		 <script type="text/javascript">			
 
-		 // var game1 = getElementById('game1');
 		 var game = new GameWindow('game1',1200,600);
 		 game.init();
-		 //console.log(game);
-		 // game.displayCards(0,0,0);
-		 // game.displayCards(1,0,500);
-		 	
 		 </script> 
 	</body>
 	</html>

@@ -65,6 +65,7 @@ function GameWindow(divId,gmwidth,gmheight){
 
 		that.dealerDeckLeft = that.dealerLeft + that.dealerWidth/2 - that.cardWidth/2;
 		that.dealerDeckTop = that.dealerTop + that.dealerHeight/2 - that.cardHeight/2;
+		that.distributeButtonFlag = true;
 	}
 
 	this.arrangeComputersCards  = function(){
@@ -112,10 +113,10 @@ function GameWindow(divId,gmwidth,gmheight){
 		sidebar.style.height = that.sideBarHeight + 'px';
 		sidebar.style.background = 'gray';
 		sidebar.style.float = 'left';
-		sidebar.appendChild(createPlayButton());
-		sidebar.appendChild(createDistributeButton());
 		sidebar.appendChild(createReplayButton());
+		sidebar.appendChild(createDistributeButton());
 		sidebar.appendChild(createUserArrangeButton());
+		sidebar.appendChild(createPlayButton());
 		sidebar.appendChild(createDealOneButton());
 		sidebar.appendChild(createDealTwoButton());
 		sidebar.appendChild(createDealThreeButton());
@@ -127,13 +128,13 @@ function GameWindow(divId,gmwidth,gmheight){
 			var playButtonDiv = document.createElement('div');
 			var playButton = document.createElement('button');
 			playButton.onclick = function(){
-				// currentGame.players[numberOfPlayers-1].arrange(); 
-				for(var i=0;i<numberOfPlayers;i++){
-					currentGame.players[i].arrange();
-				}
+				 currentGame.players[numberOfPlayers-1].arrange(); 
+				// for(var i=0;i<numberOfPlayers;i++){
+					// currentGame.players[i].arrange();
+				// }
 				refreshCards();
 			};
-			playButton.innerHTML = 'Arrange';
+			playButton.innerHTML = 'What would Computer do';
 			playButton.style.width = '100%';
 			playButton.style.height = '50px';
 			return playButton;
@@ -143,11 +144,14 @@ function GameWindow(divId,gmwidth,gmheight){
 			var distributeDiv = document.createElement('div');
 			var distributeButton = document.createElement('button');
 			distributeButton.onclick = function(){
-				that.completed = false;
-				displayDeal.playerCounter = 0;
-				displayDeal.cardCounter = 0;
-				if(!that.completed)
-					that.dealId = setInterval(displayDeal,30);
+				if(that.distributeButtonFlag==true){
+					that.distributeButtonFlag = false;
+					that.completed = false;
+					displayDeal.playerCounter = 0;
+					displayDeal.cardCounter = 0;
+					if(!that.completed)
+						that.dealId = setInterval(displayDeal,30);
+				}
 			};
 			distributeButton.innerHTML = 'Distribute';
 			distributeButton.style.width = '100%';
@@ -190,7 +194,8 @@ function GameWindow(divId,gmwidth,gmheight){
 			dealOneButton.onclick = function(){
 				clearDealArea();
 				dealOneShowCards();
-				currentGame.roundOneWinner();
+				setTimeout(function(){
+					showRoundWinner(currentGame.roundOneWinner())},3000);
 			}
 			dealOneButton.innerHTML = 'Round One';
 			dealOneButton.style.width = '100%';
@@ -203,9 +208,9 @@ function GameWindow(divId,gmwidth,gmheight){
 			var dealTwoButton = document.createElement('button');
 			dealTwoButton.onclick = function(){
 				clearDealArea();
-				console.log("I am here at button two, I don't think it's executing");
 				dealTwoShowCards();
-				currentGame.roundTwoWinner()
+				setTimeout(function(){
+					showRoundWinner(currentGame.roundTwoWinner())},3000);
 			}
 			dealTwoButton.innerHTML = 'Round Two';
 			dealTwoButton.style.width = '100%';
@@ -219,7 +224,9 @@ function GameWindow(divId,gmwidth,gmheight){
 			dealThreeButton.onclick = function(){
 				clearDealArea();
 				dealThreeShowCards();
-				currentGame.roundThreeWinner()
+				setTimeout(function(){
+					showRoundWinner(currentGame.roundThreeWinner())},3000);
+				setTimeout(showOverallWinner,6000);
 			}
 			dealThreeButton.innerHTML = 'Round Three';
 			dealThreeButton.style.width = '100%';
@@ -326,6 +333,7 @@ function GameWindow(divId,gmwidth,gmheight){
 		createPlayerTwoDealArea(dealerArea);
 		createPlayerThreeDealArea(dealerArea);
 		createPlayerFourDealArea(dealerArea);
+		createWinnerDisplayArea(dealerArea);
 		return dealerArea;
 	}
 
@@ -480,7 +488,7 @@ function GameWindow(divId,gmwidth,gmheight){
 		playerThreeDealArea.setAttribute('id',that.playerId[2]+'DealArea');
 		playerThreeDealArea.style.width = that.cardHeight-2*that.horizontalCleary+'px';
 		playerThreeDealArea.style.height = 3*that.cardWidth+'px';
-		playerThreeDealArea.style.right = 10 + 'px';
+		playerThreeDealArea.style.right = 30 + 'px';
 		playerThreeDealArea.style.top = that.cardHeight/2 - 10 + 'px';
 		// playerThreeDealArea.style.background = 'blue';
 		playerThreeDealArea.style.position = 'absolute';
@@ -499,6 +507,18 @@ function GameWindow(divId,gmwidth,gmheight){
 		// playerFourDealArea.style.background = 'blue';
 		createDealerHorizontalCards(playerFourDealArea,3);
 		parent.appendChild(playerFourDealArea);
+	}
+
+	function createWinnerDisplayArea(parent){
+		var winnerDisplayArea = document.createElement('div');
+		winnerDisplayArea.setAttribute('id','WinnerDisplayArea');
+		winnerDisplayArea.style.top = that.cardHeight-2*that.horizontalCleary-8+'px';
+		winnerDisplayArea.style.left = 2.5*that.cardWidth+'px';
+		winnerDisplayArea.style.width = 4*that.cardWidth+'px';
+		winnerDisplayArea.style.height = that.cardHeight+'px';
+		winnerDisplayArea.style.position = 'absolute';
+		// winnerDisplayArea.style.background = 'blue';
+		parent.appendChild(winnerDisplayArea);
 	}
 
 	function displayDeal(){
@@ -535,19 +555,28 @@ function GameWindow(divId,gmwidth,gmheight){
 
 
 	function refreshCards(){
+		var playerNumber=numberOfPlayers-1;
 		for(var i = 0; i < numberOfCards; i++){
-			for(var j = 0; j < numberOfPlayers; j++){
-				var currentCardHolderDivId = that.playerId[j]+'CardArea'+i;
+			//for(var j = 0; j < numberOfPlayers; j++){
+				var currentCardHolderDivId = that.playerId[playerNumber]+'CardArea'+i;
 				var currentCardHolderDiv = document.getElementById(currentCardHolderDivId);
-				var currentImage = currentGame.players[j].cards[i].cardBack;
+				var currentImage = currentGame.players[playerNumber].cards[i].cardFront;
 				var displayedImage = currentCardHolderDiv.childNodes[0];				
 				displayedImage.src = currentImage.src;
-			}
+			//}
 		}
 	}
 
 	function dealOneShowCards(){
+
+		// for(var i = 0; i < numberOfCards; i++){
+		// 	var imageDisplayed = document.getElementById(that.playerId[3]+'CardArea'+i+'drag'+i);
+		// 	imageDisplayed.setAttribute('draggable','false');
+		// }
+
 		for(var i=0;i<numberOfCards;i++){
+			var imageDisplayed = document.getElementById(that.playerId[numberOfPlayers-1]+'CardArea'+i+'drag'+i);
+			imageDisplayed.setAttribute('draggable','false');
 			for(var j=0;j<numberOfPlayers;j++){
 				var currentCardHolderDivId = that.playerId[j]+'CardArea'+i;
 				var currentCardDisplayDivId = that.playerId[j]+'DealAreaCardArea'+i%3;
@@ -564,12 +593,12 @@ function GameWindow(divId,gmwidth,gmheight){
 
 					if(j==0){
 						displayedImage.style.height = parseInt(currentCardDisplayDiv.width)-(2*that.horizontalCleary)+'px';
-						displayedImage.style.width = '70%';
+						displayedImage.style.width = '74%';
 						displayedImage.style.transform = 'rotate(90deg)';
 					}
 					else if(j==2){
 						displayedImage.style.height = parseInt(currentCardDisplayDiv.width)-(2*that.horizontalCleary)+'px';
-						displayedImage.style.width = '70%';
+						displayedImage.style.width = '74%';
 						displayedImage.style.transform = 'rotate(270deg)';
 					}
 					else{
@@ -579,9 +608,11 @@ function GameWindow(divId,gmwidth,gmheight){
 					
 				}
 				else{
-					var currentImage = currentGame.players[j].cards[i].cardBack;
-					var displayedImage = currentCardHolderDiv.childNodes[0];				
-					displayedImage.src = currentImage.src;
+					if(j!=numberOfPlayers-1){
+						var currentImage = currentGame.players[j].cards[i].cardBack;
+						var displayedImage = currentCardHolderDiv.childNodes[0];				
+						displayedImage.src = currentImage.src;
+					}
 				}
 
 				
@@ -606,12 +637,12 @@ function GameWindow(divId,gmwidth,gmheight){
 					displayedImage.src = currentImage.src;
 					if(j==0){
 						displayedImage.style.height = parseInt(currentCardDisplayDiv.width)-(2*that.horizontalCleary)+'px';
-						displayedImage.style.width = '70%';
+						displayedImage.style.width = '74%';
 						displayedImage.style.transform = 'rotate(90deg)';
 					}
 					else if(j==2){
 						displayedImage.style.height = parseInt(currentCardDisplayDiv.width)-(2*that.horizontalCleary)+'px';
-						displayedImage.style.width = '70%';
+						displayedImage.style.width = '74%';
 						displayedImage.style.transform = 'rotate(270deg)';
 					}
 					else{
@@ -620,9 +651,11 @@ function GameWindow(divId,gmwidth,gmheight){
 					}
 				}
 				else{
-					var currentImage = currentGame.players[j].cards[i].cardBack;
-					var displayedImage = currentCardHolderDiv.childNodes[0];				
-					displayedImage.src = currentImage.src;
+					if(j!=numberOfPlayers-1){
+						var currentImage = currentGame.players[j].cards[i].cardBack;
+						var displayedImage = currentCardHolderDiv.childNodes[0];				
+						displayedImage.src = currentImage.src;
+					}
 					// displayedImage.style.display = 'none';
 
 				}
@@ -647,12 +680,12 @@ function GameWindow(divId,gmwidth,gmheight){
 					displayedImage.src = currentImage.src;
 					if(j==0){
 						displayedImage.style.height = parseInt(currentCardDisplayDiv.width)-(2*that.horizontalCleary)+'px';
-						displayedImage.style.width = '70%';
+						displayedImage.style.width = '74%';
 						displayedImage.style.transform = 'rotate(90deg)';
 					}
 					else if(j==2){
 						displayedImage.style.height = parseInt(currentCardDisplayDiv.width)-(2*that.horizontalCleary)+'px';
-						displayedImage.style.width = '70%';
+						displayedImage.style.width = '74%';
 						displayedImage.style.transform = 'rotate(270deg)';
 					}
 					else{
@@ -661,9 +694,11 @@ function GameWindow(divId,gmwidth,gmheight){
 					}
 				}
 				else{
-					var currentImage = currentGame.players[j].cards[i].cardBack;
-					var displayedImage = currentCardHolderDiv.childNodes[0];				
-					displayedImage.src = currentImage.src;
+					if(j!=numberOfPlayers-1){
+						var currentImage = currentGame.players[j].cards[i].cardBack;
+						var displayedImage = currentCardHolderDiv.childNodes[0];				
+						displayedImage.src = currentImage.src;
+					}
 				}
 					
 			}
@@ -682,26 +717,68 @@ function GameWindow(divId,gmwidth,gmheight){
 				}
 			}
 		}
-	}
-
-	function showCardsToUser(){
-		var j=3;
-		for(var i = 0; i < numberOfCards; i++){
-			// for(var j = 0; j < numberOfPlayers; j++){
-				var currentCardHolderDivId = that.playerId[j]+'CardArea'+i;
-				var currentCardHolderDiv = document.getElementById(currentCardHolderDivId);
-				var currentImage = currentGame.players[j].cards[i].cardFront;
-				var displayedImage = currentCardHolderDiv.childNodes[0];				
-				displayedImage.src = currentImage.src;
-				displayedImage.setAttribute('id',currentCardHolderDivId+'drag'+i);
-				displayedImage.setAttribute('draggable','true');
-				displayedImage.ondragstart = function drag(ev){
-					ev.dataTransfer.setData('src',ev.target.id);
-				}
-			// }
+		var winnerDisplayArea = document.getElementById('WinnerDisplayArea');
+		var elements = winnerDisplayArea.getElementsByTagName('img');
+		for (var k=0;k<elements.length;k++){
+			elements[k].style.display = 'none';
 		}
 	}
 
+	function showCardsToUser(){
+		var j=numberOfPlayers-1;
+		for(var i = 0; i < numberOfCards; i++){
+			var currentCardHolderDivId = that.playerId[j]+'CardArea'+i;
+			var currentCardHolderDiv = document.getElementById(currentCardHolderDivId);
+			var currentImage = currentGame.players[j].cards[i].cardFront;
+			var displayedImage = currentCardHolderDiv.childNodes[0];				
+			displayedImage.src = currentImage.src;
+			displayedImage.setAttribute('id',currentCardHolderDivId+'drag'+i);
+			displayedImage.setAttribute('draggable','true');
+			displayedImage.ondragstart = function drag(ev){
+				ev.dataTransfer.setData('src',ev.target.id);
+			}
+		}
+	}
+
+	function showRoundWinner(winner){
+		var winnerDisplayArea = document.getElementById('WinnerDisplayArea');
+		var picture = document.createElement('img');
+		if(winner<0)
+			picture.src = "images/winners/roundWinner5.png";
+		else
+			picture.src = "images/winners/roundWinner"+winner+".png";
+		picture.style.width = '100%';
+		winnerDisplayArea.appendChild(picture);
+	}
+
+	function showOverallWinner(){
+		var winnerDisplayArea = document.getElementById('WinnerDisplayArea');
+		var elements = winnerDisplayArea.getElementsByTagName('img');
+		for (var k=0;k<elements.length;k++){
+			elements[k].style.display = 'none';
+		}
+		var picture = document.createElement('img');
+		var winner;
+		if(currentGame.roundTwoWinner()<0)
+			winner=5;
+		else{
+			if(currentGame.roundOneWinner()==currentGame.roundTwoWinner()){
+				winner=currentGame.roundTwoWinner();
+				console.log("From here, from if, one = two");
+			}
+			else if(currentGame.roundTwoWinner()==currentGame.roundThreeWinner()){
+				winner = currentGame.roundTwoWinner();
+				console.log("From here, from else if, two=three");
+			}
+			else{
+				winner=5;
+				console.log("from else");
+			}
+		}
+		picture.src = "images/winners/winner"+winner+".png";
+		picture.style.width = '100%';
+		winnerDisplayArea.appendChild(picture);	
+	}
 
 	function displayDistributionKandel(){
 			var numberOfPlayers = currentGame.players.length;
