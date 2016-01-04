@@ -6,6 +6,8 @@ function GameWindow(divId,gmwidth,gmheight){
 	var numberOfPlayers = 4;
 	var numberOfCards = 9;
 	var currentGame = new Game(numberOfPlayers,numberOfCards);
+	var playerPoints = 20000;
+	var kittyTimes = 0;
 	// currentGame.init();
 	
 
@@ -28,6 +30,8 @@ function GameWindow(divId,gmwidth,gmheight){
 		that.sideBarWidth = 0.2*that.gameBodyWidth;
 		that.sideBarHeight = that.gameBodyHeight;
 
+		that.buttonHeight = '45px';
+
 		that.arenaId = divId + 'Arena';
 		that.arenaWidth = that.gameBodyWidth-that.sideBarWidth;
 		that.arenaHeight = that.gameBodyHeight;
@@ -38,7 +42,7 @@ function GameWindow(divId,gmwidth,gmheight){
 
 		that.playerTwoHeight = 0.22 * that.arenaHeight;
 		that.playerTwoWidth = 0.7 * that.arenaWidth;
-		that.playerTwoTop = 0; that.playerTwoLeft = 0.15*that.arenaWidth;
+		that.playerTwoTop = 10; that.playerTwoLeft = 0.15*that.arenaWidth;
 
 		that.playerThreeHeight = that.arenaHeight;
 		that.playerThreeWidth = that.arenaWidth - that.playerOneWidth - that.playerTwoWidth;
@@ -51,7 +55,7 @@ function GameWindow(divId,gmwidth,gmheight){
 
 		that.playerFourHeight = that.arenaHeight - that.playerTwoHeight- that.dealerHeight;
 		that.playerFourWidth = that.playerTwoWidth;
-		that.playerFourTop  = that.dealerHeight + that.playerTwoHeight;
+		that.playerFourTop  = that.dealerHeight + that.playerTwoHeight-10;
 		that.playerFourLeft = that.playerOneWidth;
 
 		that.horizontalCleary = 10;
@@ -65,7 +69,29 @@ function GameWindow(divId,gmwidth,gmheight){
 
 		that.dealerDeckLeft = that.dealerLeft + that.dealerWidth/2 - that.cardWidth/2;
 		that.dealerDeckTop = that.dealerTop + that.dealerHeight/2 - that.cardHeight/2;
+
+		that.playerOneImageHeight = 105;
+		that.playerOneIdentifierLeft = that.sideBarWidth + 10;
+		that.playerOneIdentifierTop = that.titlebarHeight+ (that.gameBodyHeight)/2 + 50 ;
+		
+		that.playerThreeImageHeight = 105;
+		that.playerThreeIdentifierRight = 10;
+		that.playerThreeIdentifierTop = that.playerOneIdentifierTop;
+
+		that.playerTwoImageWidth = 109;
+		that.playerTwoIdentifierLeft = that.sideBarWidth/2 + (that.gameBodyWidth)/2 - that.playerTwoImageWidth/2 ;
+		that.playerTwoIdentifierTop = that.titlebarHeight + 3;
+
 		that.distributeButtonFlag = true;
+		that.replayButtonFlag = true;
+		that.userArrangeFlag = false;
+		that.showComputerArrangeFlag = false;
+		that.roundOneFlag = false;
+		that.roundTwoFlag = false;
+		that.roundThreeFlag = false;
+		that.roundOneFirstTimeFLag = true;
+		that.roundTwoFirstTimeFlag = true;
+		that.roundThreeFirstTimeFlag = true;
 	}
 
 	this.arrangeComputersCards  = function(){
@@ -91,7 +117,7 @@ function GameWindow(divId,gmwidth,gmheight){
 		titleBar.setAttribute('id',that.titlebarId);
 		titleBar.style.width = that.titlebarWidth + 'px';
 		titleBar.style.height = that.titlebarHeight + 'px';
-		titleBar.innerHTML = '<p style = "text-align: center; line-height: 50px;" >A game of KITTY</p>';
+		titleBar.innerHTML = '<h2 style = "text-align: center; line-height: 50px; font-weight: bolder; font-size: 20px;" >A GAME OF KITTY</h2>';
 		return titleBar;
 	}
 
@@ -103,7 +129,53 @@ function GameWindow(divId,gmwidth,gmheight){
 		gameWindow.style.background = 'yellow';
 		gameWindow.appendChild(createSidebar());
 		gameWindow.appendChild(createArena());
+		gameWindow.appendChild(createPlayerIdentifiers());
+		
 		return gameWindow;
+	}
+
+	function createPlayerIdentifiers(){
+		var playerIdentifier = document.createElement('div');
+		playerIdentifier.appendChild(createPlayerOneIdentifier());
+		playerIdentifier.appendChild(createPlayerTwoIdentifier());
+		playerIdentifier.appendChild(createPlayerThreeIdentifier());
+		return playerIdentifier;
+
+	}
+	function createPlayerOneIdentifier(){
+		var playerOneIdentifier = document.createElement('div');
+		playerOneIdentifier.style.left = that.playerOneIdentifierLeft + 'px';
+		playerOneIdentifier.style.top = that.playerOneIdentifierTop + 'px';
+		playerOneIdentifier.style.position = 'absolute';
+		// var playerOneIdentifierImage = document.createElement('img');
+		// playerOneIdentifierImage.src = 'images/playerOne.png';
+		// playerOneIdentifier.appendChild(playerOneIdentifierImage);
+		playerOneIdentifier.innerHTML = '<h3 style = "font-size: 16px; font-weight: bolder; color:#ffffff; transform: rotate(270deg); transform-origin: left top 0;">PLAYER ONE</h>';
+		return playerOneIdentifier;
+	}
+
+	function createPlayerTwoIdentifier(){
+		var playerTwoIdentifier = document.createElement('div');
+		playerTwoIdentifier.style.left = that.playerTwoIdentifierLeft + 'px';
+		playerTwoIdentifier.style.top = that.playerTwoIdentifierTop + 'px';
+		playerTwoIdentifier.style.position = 'absolute';
+		// var playerTwoIdentifierImage = document.createElement('img');
+		// playerTwoIdentifierImage.src = 'images/playerTwo.png';
+		// playerTwoIdentifier.appendChild(playerTwoIdentifierImage);
+		playerTwoIdentifier.innerHTML = '<h3 style = "font-size: 16px; font-weight: bolder; color:#ffffff;">PLAYER TWO</h>';
+		return playerTwoIdentifier;
+	}
+
+	function createPlayerThreeIdentifier(){
+		var playerThreeIdentifier = document.createElement('div');
+		playerThreeIdentifier.style.right = that.playerThreeIdentifierRight + 'px';
+		playerThreeIdentifier.style.top = that.playerThreeIdentifierTop + 'px';
+		playerThreeIdentifier.style.position = 'absolute';
+		// var playerThreeIdentifierImage = document.createElement('img');
+		// playerThreeIdentifierImage.src = 'images/playerThree.png';
+		// playerThreeIdentifier.appendChild(playerThreeIdentifierImage);
+		playerThreeIdentifier.innerHTML = '<h3 style = "font-size: 16px; font-weight: bolder; color:#ffffff; transform: rotate(90deg); transform-origin: right top 0;">PLAYER THREE</h>';
+		return playerThreeIdentifier;
 	}
 
 	function createSidebar(){
@@ -113,30 +185,33 @@ function GameWindow(divId,gmwidth,gmheight){
 		sidebar.style.height = that.sideBarHeight + 'px';
 		sidebar.style.background = 'gray';
 		sidebar.style.float = 'left';
+		sidebar.style.position = 'relative';
 		sidebar.appendChild(createReplayButton());
 		sidebar.appendChild(createDistributeButton());
 		sidebar.appendChild(createUserArrangeButton());
-		sidebar.appendChild(createPlayButton());
+		sidebar.appendChild(createshowComputerArrangeButton());
 		sidebar.appendChild(createDealOneButton());
 		sidebar.appendChild(createDealTwoButton());
 		sidebar.appendChild(createDealThreeButton());
+		sidebar.appendChild(createScoreboard());
 		return sidebar;
 
 
 
-		function createPlayButton(){
+		function createshowComputerArrangeButton(){
 			var playButtonDiv = document.createElement('div');
 			var playButton = document.createElement('button');
 			playButton.onclick = function(){
-				 currentGame.players[numberOfPlayers-1].arrange(); 
-				// for(var i=0;i<numberOfPlayers;i++){
-					// currentGame.players[i].arrange();
-				// }
-				refreshCards();
+				if(that.showComputerArrangeFlag == true){
+					currentGame.players[numberOfPlayers-1].arrange(); 
+					refreshCards();
+					that.roundOneFlag = true;
+
+				}
 			};
 			playButton.innerHTML = 'What would Computer do';
 			playButton.style.width = '100%';
-			playButton.style.height = '50px';
+			playButton.style.height = that.buttonHeight;
 			return playButton;
 		}
 
@@ -146,6 +221,7 @@ function GameWindow(divId,gmwidth,gmheight){
 			distributeButton.onclick = function(){
 				if(that.distributeButtonFlag==true){
 					that.distributeButtonFlag = false;
+					that.userArrangeFlag = true;
 					that.completed = false;
 					displayDeal.playerCounter = 0;
 					displayDeal.cardCounter = 0;
@@ -155,7 +231,7 @@ function GameWindow(divId,gmwidth,gmheight){
 			};
 			distributeButton.innerHTML = 'Distribute';
 			distributeButton.style.width = '100%';
-			distributeButton.style.height = '50px';
+			distributeButton.style.height = that.buttonHeight;
 			return distributeButton;
 		}
 		/*function createDistributeButton(){
@@ -174,17 +250,17 @@ function GameWindow(divId,gmwidth,gmheight){
 			var playButtonDiv = document.createElement('div');
 			var playButton = document.createElement('button');
 			playButton.onclick = function(){
-				// currentGame.init(); 
-				// refreshCards();
-				var el = document.getElementById(divId);
-				while ( el.firstChild ) {
-					el.removeChild( el.firstChild );
+				if(that.replayButtonFlag == true){
+					var el = document.getElementById(divId);
+					while ( el.firstChild ) {
+						el.removeChild( el.firstChild );
+					}
+					that.init();
 				}
-				that.init();
 			};
 			playButton.innerHTML = 'New Game';
 			playButton.style.width = '100%';
-			playButton.style.height = '50px';
+			playButton.style.height = that.buttonHeight;
 			return playButton;
 		}
 
@@ -192,14 +268,30 @@ function GameWindow(divId,gmwidth,gmheight){
 			// var dealOneDiv = document.createElement('div');
 			var dealOneButton = document.createElement('button');
 			dealOneButton.onclick = function(){
-				clearDealArea();
-				dealOneShowCards();
-				setTimeout(function(){
-					showRoundWinner(currentGame.roundOneWinner())},3000);
+				if(that.roundOneFlag == true){
+					if(that.roundOneFirstTimeFLag == true)
+						that.roundOneFlag = false;
+					clearDealArea();
+					console.log("i am called");
+					dealOneShowCards();
+
+					if(that.roundOneFirstTimeFLag == true){
+						that.replayButtonFlag = false;
+						setTimeout(function(){
+							showRoundWinner(currentGame.roundOneWinner());
+							that.roundOneFlag = true;
+							that.roundTwoFlag = true;
+							that.roundOneFirstTimeFLag = false;
+							that.replayButtonFlag = true;
+						},3000);
+					}
+					else
+						showRoundWinner(currentGame.roundOneWinner());
+				}
 			}
 			dealOneButton.innerHTML = 'Round One';
 			dealOneButton.style.width = '100%';
-			dealOneButton.style.height = '50px';
+			dealOneButton.style.height = that.buttonHeight;
 			return dealOneButton;
 		}
 
@@ -207,14 +299,31 @@ function GameWindow(divId,gmwidth,gmheight){
 			// var dealTwoDiv = document.createElement('div');
 			var dealTwoButton = document.createElement('button');
 			dealTwoButton.onclick = function(){
-				clearDealArea();
-				dealTwoShowCards();
-				setTimeout(function(){
-					showRoundWinner(currentGame.roundTwoWinner())},3000);
+				if(that.roundTwoFlag == true){
+					if(that.roundTwoFirstTimeFlag == true){
+						that.roundOneFlag = false;
+						that.roundTwoFlag = false;
+					}
+					clearDealArea();
+					dealTwoShowCards();
+					if(that.roundTwoFirstTimeFlag == true){
+						that.replayButtonFlag = false;
+						setTimeout(function(){
+							showRoundWinner(currentGame.roundTwoWinner());
+							that.roundOneFlag = true;
+							that.roundTwoFlag = true;
+							that.roundThreeFlag = true;
+							that.roundTwoFirstTimeFlag = false;
+							that.replayButtonFlag = true;
+						},3000);
+					}
+					else
+						showRoundWinner(currentGame.roundTwoWinner());
+				}
 			}
 			dealTwoButton.innerHTML = 'Round Two';
 			dealTwoButton.style.width = '100%';
-			dealTwoButton.style.height = '50px';
+			dealTwoButton.style.height = that.buttonHeight;
 			return dealTwoButton;
 		}
 
@@ -222,29 +331,116 @@ function GameWindow(divId,gmwidth,gmheight){
 			// var dealThreeDiv = document.createElement('div');
 			var dealThreeButton = document.createElement('button');
 			dealThreeButton.onclick = function(){
-				clearDealArea();
-				dealThreeShowCards();
-				setTimeout(function(){
-					showRoundWinner(currentGame.roundThreeWinner())},3000);
-				setTimeout(showOverallWinner,6000);
+				if(that.roundThreeFlag == true){
+					that.roundOneFlag = false;
+					that.roundTwoFlag = false;
+					that.roundThreeFlag = false;
+					clearDealArea();
+					dealThreeShowCards();
+					if(that.roundThreeFirstTimeFlag == true){
+						that.replayButtonFlag = false;
+						setTimeout(function(){
+							showRoundWinner(currentGame.roundThreeWinner())},3000);
+						setTimeout(function(){
+							showOverallWinner();
+							that.roundOneFlag = true;
+							that.roundTwoFlag = true;
+							that.roundThreeFlag = true;
+							that.roundThreeFirstTimeFlag = false;
+							that.replayButtonFlag = true;
+						},6000);
+					}
+					else{
+						showRoundWinner(currentGame.roundThreeWinner());
+						that.replayButtonFlag = false;
+						setTimeout(function(){
+							showOverallWinner();
+							that.roundOneFlag = true;
+							that.roundTwoFlag = true;
+							that.roundThreeFlag = true;
+							that.replayButtonFlag = true;
+						},1500);
+
+					}
+				}
 			}
 			dealThreeButton.innerHTML = 'Round Three';
 			dealThreeButton.style.width = '100%';
-			dealThreeButton.style.height = '50px';
+			dealThreeButton.style.height = that.buttonHeight;
 			return dealThreeButton;
 		}
 
 		function createUserArrangeButton(){
 			var userArrangeButton = document.createElement('button');
 			userArrangeButton.onclick = function(){
-				showCardsToUser();
+				if(that.userArrangeFlag==true){
+					showCardsToUser();	
+					that.showComputerArrangeFlag = true;
+				}
+				
 			}
 			userArrangeButton.innerHTML = 'User Arrange';
 			userArrangeButton.style.width = '100%';
-			userArrangeButton.style.height = '50px';
+			userArrangeButton.style.height = that.buttonHeight;
 			return userArrangeButton;
 		}
 		
+	}
+
+	function createScoreboard(){
+		var scoreboard = document.createElement('div');
+		scoreboard.style.bottom = '0px';
+		scoreboard.style.width = '100%';
+		// scoreboard.style.height = that.gameBodyHeight-7*parseInt(that.buttonHeight)+'px';
+		scoreboard.style.height = '225px';
+		scoreboard.style.position = 'absolute';
+		scoreboard.style.textAlign = 'center';
+		// var playerpoint = playerPoints.toString();
+		var pointHeading = document.createElement('div');
+		pointHeading.style.width = '100%';
+		pointHeading.style.height = '75px';
+		pointHeading.style.lineHeight = pointHeading.style.height;
+		pointHeading.innerHTML = '<h3 style = "font-size: 25px";> YOUR POINTS </h3>';
+		scoreboard.appendChild(pointHeading);
+		var points = document.createElement('div');
+		points.setAttribute('id','pointArea');
+		points.style.width = '100%';
+		// points.style.height = parseInt(scoreboard.style.height)-parseInt(pointHeading.style.height) + 'px';
+		points.style.height = '75px';
+		points.style.fontSize = '40px';
+		points.style.lineHeight = points.style.height;
+		scoreboard.appendChild(points);
+		points.innerHTML = playerPoints;
+		var kitty = document.createElement('div');
+		kitty.style.width = '100%';
+		kitty.style.height = '75px';
+		kitty.style.lineHeight = kitty.style.height;
+		kitty.style.fontSize = '40px';
+
+		var kittyTitle = document.createElement('div');
+		kittyTitle.style.width = '50%';
+		kittyTitle.style.height = '75px';
+		kittyTitle.style.lineHeight = kittyTitle.style.height;
+		kittyTitle.style.fontSize = '20px';
+		kittyTitle.style.float = 'left';
+		kittyTitle.style.textAlign = 'center';
+		kittyTitle.innerHTML = '<p>Times of Kitty </p>'
+
+		var kittyNumber = document.createElement('div');
+		kittyNumber.style.width = '50%';
+		kittyNumber.style.height = '75px';
+		kittyNumber.style.lineHeight = kittyNumber.style.height;
+		kittyNumber.style.fontSize = '40px';
+		kittyNumber.style.float = 'right';
+		kittyNumber.style.textAlign = 'center';
+		kittyNumber.setAttribute('id','kittyArea');
+		kittyNumber.innerHTML = kittyTimes;
+
+		kitty.appendChild(kittyTitle);
+		kitty.appendChild(kittyNumber);
+
+		scoreboard.appendChild(kitty);
+		return scoreboard;
 	}
 
 	
@@ -253,7 +449,7 @@ function GameWindow(divId,gmwidth,gmheight){
 		arena.setAttribute('id',that.arenaId);
 		arena.style.width = that.arenaWidth + 'px';
 		arena.style.height = that.arenaHeight + 'px';
-		arena.style.background = 'blue';
+		arena.style.background = '#076707';
 		arena.style.float = 'right';
 		arena.style.position = 'relative';
 		arena.appendChild(createPlayerOne());
@@ -327,6 +523,7 @@ function GameWindow(divId,gmwidth,gmheight){
 		dealerArea.style.left = that.dealerLeft + 'px';
 		dealerArea.style.top = that.dealerTop + 'px';
 		dealerArea.style.background = '#076707';
+
 		dealerArea.style.position = 'absolute';
 		// createDeckArea(dealerArea);
 		createPlayerOneDealArea(dealerArea);
@@ -463,7 +660,7 @@ function GameWindow(divId,gmwidth,gmheight){
 		playerOneDealArea.style.width = that.cardHeight-2*that.horizontalCleary+'px';
 		playerOneDealArea.style.height = 3*that.cardWidth+'px';
 		playerOneDealArea.style.left = 50 + 'px';
-		playerOneDealArea.style.top = that.cardHeight/2 - 10 + 'px';
+		playerOneDealArea.style.top = that.cardHeight/2 - 10 +'px';
 		// playerOneDealArea.style.background = 'blue';
 		playerOneDealArea.style.position = 'absolute';
 		createRotatedCards(playerOneDealArea,3);
@@ -473,7 +670,7 @@ function GameWindow(divId,gmwidth,gmheight){
 	function createPlayerTwoDealArea(parent){
 		var playerTwoDealArea = document.createElement('div');
 		playerTwoDealArea.setAttribute('id',that.playerId[1]+'DealArea');
-		playerTwoDealArea.style.top = '10px';
+		playerTwoDealArea.style.top = '20px';
 		playerTwoDealArea.style.left = 3*that.cardWidth + 'px';
 		playerTwoDealArea.style.width = 3*that.cardWidth+'px';
 		playerTwoDealArea.style.height = that.cardHeight-2*that.horizontalCleary+'px';
@@ -499,7 +696,7 @@ function GameWindow(divId,gmwidth,gmheight){
 	function createPlayerFourDealArea(parent){
 		var playerFourDealArea = document.createElement('div');
 		playerFourDealArea.setAttribute('id',that.playerId[3]+'DealArea');
-		playerFourDealArea.style.bottom = '10px';
+		playerFourDealArea.style.bottom = '20px';
 		playerFourDealArea.style.left = 3*that.cardWidth + 'px';
 		playerFourDealArea.style.width = 3*that.cardWidth+'px';
 		playerFourDealArea.style.height = that.cardHeight-2*that.horizontalCleary+'px';
@@ -512,7 +709,7 @@ function GameWindow(divId,gmwidth,gmheight){
 	function createWinnerDisplayArea(parent){
 		var winnerDisplayArea = document.createElement('div');
 		winnerDisplayArea.setAttribute('id','WinnerDisplayArea');
-		winnerDisplayArea.style.top = that.cardHeight-2*that.horizontalCleary-8+'px';
+		winnerDisplayArea.style.top = that.cardHeight-2*that.horizontalCleary-16+'px';
 		winnerDisplayArea.style.left = 2.5*that.cardWidth+'px';
 		winnerDisplayArea.style.width = 4*that.cardWidth+'px';
 		winnerDisplayArea.style.height = that.cardHeight+'px';
@@ -778,41 +975,25 @@ function GameWindow(divId,gmwidth,gmheight){
 		picture.src = "images/winners/winner"+winner+".png";
 		picture.style.width = '100%';
 		winnerDisplayArea.appendChild(picture);	
-	}
-
-	function displayDistributionKandel(){
-			var numberOfPlayers = currentGame.players.length;
-			var numberOfCards = currentGame.players[0].cards.length;
-			console.log('Number of players are  ',numberOfPlayers);
-			// for(var i = 0; i < numberOfCards; i++){
-			// 	for(var j = 0; j < numberOfPlayers; j++){
-			// 		var currentImage = currentGame.players[j].cards[i].cardBack;
-			// 		currentImage.style.height = '100%';
-			// 		currentImage.style.width = '100%';
-			// 		var currentCardHolderDivId = that.playerId[j]+'CardArea'+i;
-			// 		//console.log(' Id is ',currentCardHolderDivId);
-			// 		var currentCardHolderDiv = document.getElementById(currentCardHolderDivId);
-
-			// 		currentCardHolderDiv.appendChild(currentImage);
-
-			// 	}
-			// }
-			var i=0;j=0;
-			var animateCards = function(){
-				var currentImage = currentGame.players[j].cards[i].cardBack;
-				currentImage.style.height = '100%';
-				currentImage.style.width = '100%';
-				var currentCardHolderDivId = that.playerId[j]+'CardArea'+i;
-				var currentCardHolderDiv = document.getElementById(currentCardHolderDivId);
-				currentCardHolderDiv.appendChild(currentImage);
-				j++;
-				if(j==numberOfPlayers){
-					i++;j=0;
-				}
-				if(i*j == (numberOfPlayers-1)*(numberOfCards-1)){
-					clearInterval(animateCards);
-				}
-			}
-			setInterval(animateCards,30);
-		} 
+		if(winner == 4){
+			var point = document.getElementById('pointArea');
+			playerPoints+=3000+kittyTimes*3000;
+			kittyTimes = 0;
+			point.innerHTML = playerPoints;
+			var kitty = document.getElementById('kittyArea');
+			kitty.innerHTML = kittyTimes;
+		}
+		else if(winner == 5){
+			var kitty = document.getElementById('kittyArea');
+			kitty.innerHTML = ++kittyTimes;
+		}
+		else{
+			var point = document.getElementById('pointArea');
+			playerPoints-=1000 + kittyTimes*1000;
+			kittyTimes = 0;
+			point.innerHTML = playerPoints;	
+			var kitty = document.getElementById('kittyArea');
+			kitty.innerHTML = kittyTimes;
+		}
+	} 
 }
