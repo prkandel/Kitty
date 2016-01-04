@@ -376,6 +376,7 @@ function GameWindow(divId,gmwidth,gmheight){
 				if(that.userArrangeFlag==true){
 					showCardsToUser();	
 					that.showComputerArrangeFlag = true;
+					that.roundOneFlag = true;
 				}
 				
 			}
