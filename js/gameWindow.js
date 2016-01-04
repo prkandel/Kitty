@@ -418,7 +418,7 @@ function GameWindow(divId,gmwidth,gmheight){
 		kitty.style.fontSize = '40px';
 
 		var kittyTitle = document.createElement('div');
-		kittyTitle.style.width = '50%';
+		kittyTitle.style.width = '60%';
 		kittyTitle.style.height = '75px';
 		kittyTitle.style.lineHeight = kittyTitle.style.height;
 		kittyTitle.style.fontSize = '20px';
@@ -427,7 +427,7 @@ function GameWindow(divId,gmwidth,gmheight){
 		kittyTitle.innerHTML = '<p>Times of Kitty </p>'
 
 		var kittyNumber = document.createElement('div');
-		kittyNumber.style.width = '50%';
+		kittyNumber.style.width = '40%';
 		kittyNumber.style.height = '75px';
 		kittyNumber.style.lineHeight = kittyNumber.style.height;
 		kittyNumber.style.fontSize = '40px';
