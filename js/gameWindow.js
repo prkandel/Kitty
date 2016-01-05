@@ -1,6 +1,4 @@
-function GameWindow(divId,gmwidth,gmheight){
-	//last edited 11:04pm so far
-	
+function GameWindow(divId,gmwidth,gmheight){	
 	this.mainWindowWidth=gmwidth; this.mainWindowHeight = gmheight;
 	var currentGameWindow = document.getElementById(divId);
 	var numberOfPlayers = 4;
@@ -8,6 +6,7 @@ function GameWindow(divId,gmwidth,gmheight){
 	var currentGame = new Game(numberOfPlayers,numberOfCards);
 	var playerPoints = 20000;
 	var kittyTimes = 0;
+	var hattrick = false;
 	// currentGame.init();
 	
 
@@ -83,7 +82,7 @@ function GameWindow(divId,gmwidth,gmheight){
 		that.playerTwoIdentifierTop = that.titlebarHeight + 3;
 
 		that.distributeButtonFlag = true;
-		that.replayButtonFlag = true;
+		that.replayButtonFlag = false;
 		that.userArrangeFlag = false;
 		that.showComputerArrangeFlag = false;
 		that.roundOneFlag = false;
@@ -92,6 +91,7 @@ function GameWindow(divId,gmwidth,gmheight){
 		that.roundOneFirstTimeFLag = true;
 		that.roundTwoFirstTimeFlag = true;
 		that.roundThreeFirstTimeFlag = true;
+		that.gameCompleted = false;
 	}
 
 	this.arrangeComputersCards  = function(){
@@ -147,9 +147,6 @@ function GameWindow(divId,gmwidth,gmheight){
 		playerOneIdentifier.style.left = that.playerOneIdentifierLeft + 'px';
 		playerOneIdentifier.style.top = that.playerOneIdentifierTop + 'px';
 		playerOneIdentifier.style.position = 'absolute';
-		// var playerOneIdentifierImage = document.createElement('img');
-		// playerOneIdentifierImage.src = 'images/playerOne.png';
-		// playerOneIdentifier.appendChild(playerOneIdentifierImage);
 		playerOneIdentifier.innerHTML = '<h3 style = "font-size: 16px; font-weight: bolder; color:#ffffff; transform: rotate(270deg); transform-origin: left top 0;">PLAYER ONE</h>';
 		return playerOneIdentifier;
 	}
@@ -159,9 +156,6 @@ function GameWindow(divId,gmwidth,gmheight){
 		playerTwoIdentifier.style.left = that.playerTwoIdentifierLeft + 'px';
 		playerTwoIdentifier.style.top = that.playerTwoIdentifierTop + 'px';
 		playerTwoIdentifier.style.position = 'absolute';
-		// var playerTwoIdentifierImage = document.createElement('img');
-		// playerTwoIdentifierImage.src = 'images/playerTwo.png';
-		// playerTwoIdentifier.appendChild(playerTwoIdentifierImage);
 		playerTwoIdentifier.innerHTML = '<h3 style = "font-size: 16px; font-weight: bolder; color:#ffffff;">PLAYER TWO</h>';
 		return playerTwoIdentifier;
 	}
@@ -171,9 +165,6 @@ function GameWindow(divId,gmwidth,gmheight){
 		playerThreeIdentifier.style.right = that.playerThreeIdentifierRight + 'px';
 		playerThreeIdentifier.style.top = that.playerThreeIdentifierTop + 'px';
 		playerThreeIdentifier.style.position = 'absolute';
-		// var playerThreeIdentifierImage = document.createElement('img');
-		// playerThreeIdentifierImage.src = 'images/playerThree.png';
-		// playerThreeIdentifier.appendChild(playerThreeIdentifierImage);
 		playerThreeIdentifier.innerHTML = '<h3 style = "font-size: 16px; font-weight: bolder; color:#ffffff; transform: rotate(90deg); transform-origin: right top 0;">PLAYER THREE</h>';
 		return playerThreeIdentifier;
 	}
@@ -199,13 +190,13 @@ function GameWindow(divId,gmwidth,gmheight){
 
 
 		function createshowComputerArrangeButton(){
-			var playButtonDiv = document.createElement('div');
 			var playButton = document.createElement('button');
 			playButton.onclick = function(){
 				if(that.showComputerArrangeFlag == true){
 					currentGame.players[numberOfPlayers-1].arrange(); 
 					refreshCards();
 					that.roundOneFlag = true;
+					that.replayButtonFlag = true;
 
 				}
 			};
@@ -216,11 +207,11 @@ function GameWindow(divId,gmwidth,gmheight){
 		}
 
 		function createDistributeButton(){
-			var distributeDiv = document.createElement('div');
 			var distributeButton = document.createElement('button');
 			distributeButton.onclick = function(){
 				if(that.distributeButtonFlag==true){
 					that.distributeButtonFlag = false;
+					that.replayButtonFlag = true;
 					that.userArrangeFlag = true;
 					that.completed = false;
 					displayDeal.playerCounter = 0;
@@ -234,28 +225,55 @@ function GameWindow(divId,gmwidth,gmheight){
 			distributeButton.style.height = that.buttonHeight;
 			return distributeButton;
 		}
-		/*function createDistributeButton(){
-			var distributeButton = document.createElement('button');
-			distributeButton.onclick = function(){
-				displayDistributionKandel();
-				// distributeButton.removeAttribute("onclick");
-			};
-			distributeButton.innerHTML = 'Distribute';
-			distributeButton.style.width = '100%';
-			distributeButton.style.height = '50px';
-			return distributeButton;
 
-		}*/
 		function createReplayButton(){
-			var playButtonDiv = document.createElement('div');
 			var playButton = document.createElement('button');
 			playButton.onclick = function(){
 				if(that.replayButtonFlag == true){
+					that.replayButtonFlag = false;
 					var el = document.getElementById(divId);
-					while ( el.firstChild ) {
-						el.removeChild( el.firstChild );
+					if(that.gameCompleted == true){
+						while ( el.firstChild ) {
+							el.removeChild( el.firstChild );
+						}
+						if(playerPoints<0){
+							// window.alert('NO MORE POINTS TO PLAY');
+							var gameOver = document.createElement('img');
+							gameOver.src = 'images/gameOver.png';
+							gameOver.style.width = '50%';
+							gameOver.style.position = 'absolute';
+							gameOver.style.left = '300px';
+							gameOver.style.top = '100px';
+							currentGameWindow.style.position = 'relative';
+							currentGameWindow.appendChild(gameOver);
+						}
+						else
+							that.init();
 					}
-					that.init();
+					else{
+						var warning = window.confirm("Are you Sure? It will cause deduction in your points");
+						if(warning == true){
+							playerPoints-=1000 + kittyTimes*1000;
+							kittyTimes = 0;
+							while ( el.firstChild ) {
+								el.removeChild( el.firstChild );
+							}
+							if(playerPoints<0){
+								// window.alert('NO MORE POINTS TO PLAY');
+								var gameOver = document.createElement('img');
+								gameOver.src = 'images/gameOver.png';
+								gameOver.style.width = '50%';
+								gameOver.style.position = 'absolute';
+								gameOver.style.left = '300px';
+								gameOver.style.top = '100px';
+								currentGameWindow.style.position = 'relative';
+								currentGameWindow.appendChild(gameOver);
+							}
+							else{
+								that.init();	
+							}
+						}
+					}
 				}
 			};
 			playButton.innerHTML = 'New Game';
@@ -265,29 +283,33 @@ function GameWindow(divId,gmwidth,gmheight){
 		}
 
 		function createDealOneButton(){
-			// var dealOneDiv = document.createElement('div');
 			var dealOneButton = document.createElement('button');
 			dealOneButton.onclick = function(){
 				if(that.roundOneFlag == true){
-					if(that.roundOneFirstTimeFLag == true)
-						that.roundOneFlag = false;
-					clearDealArea();
-					console.log("i am called");
-					dealOneShowCards();
-
-					if(that.roundOneFirstTimeFLag == true){
-						that.replayButtonFlag = false;
-						setTimeout(function(){
-							showRoundWinner(currentGame.roundOneWinner());
-							that.roundOneFlag = true;
-							that.roundTwoFlag = true;
-							that.roundOneFirstTimeFLag = false;
-							that.replayButtonFlag = true;
-						},3000);
+					if(currentGame.checkCardsOrderofPlayer() == false){
+						window.alert("INVALID COMBINATION OF CARDS");
 					}
-					else
-						showRoundWinner(currentGame.roundOneWinner());
+					else{
+						if(that.roundOneFirstTimeFLag == true)
+							that.roundOneFlag = false;
+						clearDealArea();
+						dealOneShowCards();
+
+						if(that.roundOneFirstTimeFLag == true){
+							that.replayButtonFlag = false;
+							setTimeout(function(){
+								showRoundWinner(currentGame.roundOneWinner());
+								that.roundOneFlag = true;
+								that.roundTwoFlag = true;
+								that.roundOneFirstTimeFLag = false;
+								that.replayButtonFlag = true;
+							},3000);
+						}
+						else
+							showRoundWinner(currentGame.roundOneWinner());	
+					}
 				}
+					
 			}
 			dealOneButton.innerHTML = 'Round One';
 			dealOneButton.style.width = '100%';
@@ -296,7 +318,6 @@ function GameWindow(divId,gmwidth,gmheight){
 		}
 
 		function createDealTwoButton(){
-			// var dealTwoDiv = document.createElement('div');
 			var dealTwoButton = document.createElement('button');
 			dealTwoButton.onclick = function(){
 				if(that.roundTwoFlag == true){
@@ -328,7 +349,6 @@ function GameWindow(divId,gmwidth,gmheight){
 		}
 
 		function createDealThreeButton(){
-			// var dealThreeDiv = document.createElement('div');
 			var dealThreeButton = document.createElement('button');
 			dealThreeButton.onclick = function(){
 				if(that.roundThreeFlag == true){
@@ -348,6 +368,7 @@ function GameWindow(divId,gmwidth,gmheight){
 							that.roundThreeFlag = true;
 							that.roundThreeFirstTimeFlag = false;
 							that.replayButtonFlag = true;
+							that.gameCompleted = true;
 						},6000);
 					}
 					else{
@@ -377,6 +398,7 @@ function GameWindow(divId,gmwidth,gmheight){
 					showCardsToUser();	
 					that.showComputerArrangeFlag = true;
 					that.roundOneFlag = true;
+					that.replayButtonFlag = true;
 				}
 				
 			}
@@ -392,11 +414,11 @@ function GameWindow(divId,gmwidth,gmheight){
 		var scoreboard = document.createElement('div');
 		scoreboard.style.bottom = '0px';
 		scoreboard.style.width = '100%';
-		// scoreboard.style.height = that.gameBodyHeight-7*parseInt(that.buttonHeight)+'px';
-		scoreboard.style.height = '225px';
+		scoreboard.style.height = '235px';
 		scoreboard.style.position = 'absolute';
 		scoreboard.style.textAlign = 'center';
-		// var playerpoint = playerPoints.toString();
+		scoreboard.style.background = '#e36968';
+		scoreboard.style.color = '#ffffff';
 		var pointHeading = document.createElement('div');
 		pointHeading.style.width = '100%';
 		pointHeading.style.height = '75px';
@@ -406,7 +428,6 @@ function GameWindow(divId,gmwidth,gmheight){
 		var points = document.createElement('div');
 		points.setAttribute('id','pointArea');
 		points.style.width = '100%';
-		// points.style.height = parseInt(scoreboard.style.height)-parseInt(pointHeading.style.height) + 'px';
 		points.style.height = '75px';
 		points.style.fontSize = '40px';
 		points.style.lineHeight = points.style.height;
@@ -472,7 +493,6 @@ function GameWindow(divId,gmwidth,gmheight){
 		playerOneArea.style.background = '#076707';
 		playerOneArea.style.position = 'absolute';
 		createVerticalCards(playerOneArea,numberOfCards);
-		// that.createCardArea(PlayerOneArea,0,PlayerOneAreaId,0);
 		return playerOneArea;
 	}
 
@@ -486,7 +506,6 @@ function GameWindow(divId,gmwidth,gmheight){
 		playerTwoArea.style.background = '#076707';
 		playerTwoArea.style.position = 'absolute';
 		createHorizontalCards(playerTwoArea,numberOfCards);
-		// that.createCardArea(PlayerTwoArea,1,PlayerTwoAreaId,350);
 		return playerTwoArea;
 	}
 
@@ -526,7 +545,6 @@ function GameWindow(divId,gmwidth,gmheight){
 		dealerArea.style.background = '#076707';
 
 		dealerArea.style.position = 'absolute';
-		// createDeckArea(dealerArea);
 		createPlayerOneDealArea(dealerArea);
 		createPlayerTwoDealArea(dealerArea);
 		createPlayerThreeDealArea(dealerArea);
@@ -563,8 +581,8 @@ function GameWindow(divId,gmwidth,gmheight){
 					var index1 = parseInt((src.id).split('').reverse().join(''));
 					var index2 = parseInt((tgt.id).split('').reverse().join(''));
 
-					console.log(index1);
-					console.log(index2);
+					// console.log(index1);
+					// console.log(index2);
 					var temp = currentGame.players[3].cards[index1];
 					currentGame.players[3].cards[index1] = currentGame.players[3].cards[index2];
 					currentGame.players[3].cards[index2] = temp;
@@ -573,10 +591,10 @@ function GameWindow(divId,gmwidth,gmheight){
 					src.id = tgt.id;
 					tgt.id = temp;
 
-					console.log(currentGame.players[3].cards);
-					for(var i=0;i<9;i++){
-						currentGame.players[3].cards[i].displayIt();
-					}	
+					// console.log(currentGame.players[3].cards);
+					// for(var i=0;i<9;i++){
+					// 	currentGame.players[3].cards[i].displayIt();
+					// }	
 				}
 				cardDiv.ondragover = function allowDrop(ev){
 					ev.preventDefault();
@@ -593,9 +611,6 @@ function GameWindow(divId,gmwidth,gmheight){
 		for(var i = 0; i < n ;i++){
 			var cardDiv =  document.createElement('div');
 			cardDiv.setAttribute('id',parent.id+'CardArea'+i);
-			// var topPosition = parseInt(parent.style.top);
-			// cardDiv.style.top = that.horizontalCleary + 'px';
-			// cardDiv.style.top = parent.style.top;
 			cardDiv.style.left = i*that.cardWidth + 'px';
 			cardDiv.style.height = (that.cardHeight - 2*that.horizontalCleary) + 'px';
 			cardDiv.style.width = that.cardWidth + 'px';
@@ -612,8 +627,6 @@ function GameWindow(divId,gmwidth,gmheight){
 			cardDiv.setAttribute('id',parent.id+'CardArea'+i);
 			var topPosition = parseInt(parent.style.top);
 			cardDiv.style.top = i*that.cardWidth + 'px';
-			// cardDiv.style.top = parent.style.top;
-			// cardDiv.style.left = i*that.cardWidth + 'px';
 			cardDiv.style.height = that.cardWidth + 'px';
 			cardDiv.style.width = (that.cardHeight - 2*that.horizontalCleary) + 'px';
 			cardDiv.style.position = 'absolute';
@@ -629,11 +642,9 @@ function GameWindow(divId,gmwidth,gmheight){
 			cardDiv.setAttribute('id',parent.id+'CardArea'+i);
 			cardDiv.style.top = (that.cleary + i * that.overlapVerticalCard) + 'px';
 			cardDiv.style.left = that.clearx + 'px';
-			// cardDiv.style.height = that.cardHeight  + 'px';
 			cardDiv.style.height = (that.cardHeight - 2*that.horizontalCleary) + 'px';
 			cardDiv.style.width = that.cardWidth + 'px';
 			cardDiv.style.position = 'absolute';
-			// cardDiv.style.background = '#074007';
 			parent.appendChild(cardDiv);
 		}
 	}
@@ -652,7 +663,6 @@ function GameWindow(divId,gmwidth,gmheight){
 		currentImage.style.width = '100%'; currentImage.style.height = '100%';
 		deckArea.appendChild(currentImage);
 		parent.appendChild(deckArea);
-		// return deckArea;
 	}
 
 	function createPlayerOneDealArea(parent){
@@ -662,7 +672,6 @@ function GameWindow(divId,gmwidth,gmheight){
 		playerOneDealArea.style.height = 3*that.cardWidth+'px';
 		playerOneDealArea.style.left = 50 + 'px';
 		playerOneDealArea.style.top = that.cardHeight/2 - 10 +'px';
-		// playerOneDealArea.style.background = 'blue';
 		playerOneDealArea.style.position = 'absolute';
 		createRotatedCards(playerOneDealArea,3);
 		parent.appendChild(playerOneDealArea);
@@ -676,7 +685,6 @@ function GameWindow(divId,gmwidth,gmheight){
 		playerTwoDealArea.style.width = 3*that.cardWidth+'px';
 		playerTwoDealArea.style.height = that.cardHeight-2*that.horizontalCleary+'px';
 		playerTwoDealArea.style.position = 'absolute';
-		// playerTwoDealArea.style.background = 'blue';
 		createDealerHorizontalCards(playerTwoDealArea,3);
 		parent.appendChild(playerTwoDealArea);
 	}
@@ -688,7 +696,6 @@ function GameWindow(divId,gmwidth,gmheight){
 		playerThreeDealArea.style.height = 3*that.cardWidth+'px';
 		playerThreeDealArea.style.right = 30 + 'px';
 		playerThreeDealArea.style.top = that.cardHeight/2 - 10 + 'px';
-		// playerThreeDealArea.style.background = 'blue';
 		playerThreeDealArea.style.position = 'absolute';
 		createRotatedCards(playerThreeDealArea,3);
 		parent.appendChild(playerThreeDealArea);
@@ -702,7 +709,6 @@ function GameWindow(divId,gmwidth,gmheight){
 		playerFourDealArea.style.width = 3*that.cardWidth+'px';
 		playerFourDealArea.style.height = that.cardHeight-2*that.horizontalCleary+'px';
 		playerFourDealArea.style.position = 'absolute';
-		// playerFourDealArea.style.background = 'blue';
 		createDealerHorizontalCards(playerFourDealArea,3);
 		parent.appendChild(playerFourDealArea);
 	}
@@ -715,7 +721,6 @@ function GameWindow(divId,gmwidth,gmheight){
 		winnerDisplayArea.style.width = 4*that.cardWidth+'px';
 		winnerDisplayArea.style.height = that.cardHeight+'px';
 		winnerDisplayArea.style.position = 'absolute';
-		// winnerDisplayArea.style.background = 'blue';
 		parent.appendChild(winnerDisplayArea);
 	}
 
@@ -755,23 +760,15 @@ function GameWindow(divId,gmwidth,gmheight){
 	function refreshCards(){
 		var playerNumber=numberOfPlayers-1;
 		for(var i = 0; i < numberOfCards; i++){
-			//for(var j = 0; j < numberOfPlayers; j++){
-				var currentCardHolderDivId = that.playerId[playerNumber]+'CardArea'+i;
-				var currentCardHolderDiv = document.getElementById(currentCardHolderDivId);
-				var currentImage = currentGame.players[playerNumber].cards[i].cardFront;
-				var displayedImage = currentCardHolderDiv.childNodes[0];				
-				displayedImage.src = currentImage.src;
-			//}
+			var currentCardHolderDivId = that.playerId[playerNumber]+'CardArea'+i;
+			var currentCardHolderDiv = document.getElementById(currentCardHolderDivId);
+			var currentImage = currentGame.players[playerNumber].cards[i].cardFront;
+			var displayedImage = currentCardHolderDiv.childNodes[0];				
+			displayedImage.src = currentImage.src;
 		}
 	}
 
 	function dealOneShowCards(){
-
-		// for(var i = 0; i < numberOfCards; i++){
-		// 	var imageDisplayed = document.getElementById(that.playerId[3]+'CardArea'+i+'drag'+i);
-		// 	imageDisplayed.setAttribute('draggable','false');
-		// }
-
 		for(var i=0;i<numberOfCards;i++){
 			var imageDisplayed = document.getElementById(that.playerId[numberOfPlayers-1]+'CardArea'+i+'drag'+i);
 			imageDisplayed.setAttribute('draggable','false');
@@ -825,7 +822,6 @@ function GameWindow(divId,gmwidth,gmheight){
 				var currentCardDisplayDivId = that.playerId[j]+'DealAreaCardArea'+i%3;
 				var currentCardHolderDiv = document.getElementById(currentCardHolderDivId);
 				var currentCardDisplayDiv = document.getElementById(currentCardDisplayDivId);
-				// currentCardDisplayDiv.removeChild(currentCardDisplayDiv.childNodes[0]);
 				if(i>=3&&i<6){
 					var currentImage = currentGame.players[j].cards[i].cardFront;
 					var alreadyDisplayedImage = currentCardHolderDiv.childNodes[0];
@@ -854,7 +850,6 @@ function GameWindow(divId,gmwidth,gmheight){
 						var displayedImage = currentCardHolderDiv.childNodes[0];				
 						displayedImage.src = currentImage.src;
 					}
-					// displayedImage.style.display = 'none';
 
 				}
 					
@@ -960,41 +955,58 @@ function GameWindow(divId,gmwidth,gmheight){
 		if(currentGame.roundTwoWinner()<0)
 			winner=5;
 		else{
-			if(currentGame.roundOneWinner()==currentGame.roundTwoWinner()){
+			if(currentGame.roundOneWinner()==currentGame.roundTwoWinner() && currentGame.roundThreeWinner()==currentGame.roundTwoWinner()){
 				winner=currentGame.roundTwoWinner();
-				console.log("From here, from if, one = two");
+				hattrick = true;
+			}
+			else if(currentGame.roundOneWinner()==currentGame.roundTwoWinner()){
+				winner=currentGame.roundTwoWinner();
+				// console.log("From here, from if, one = two");
 			}
 			else if(currentGame.roundTwoWinner()==currentGame.roundThreeWinner()){
 				winner = currentGame.roundTwoWinner();
-				console.log("From here, from else if, two=three");
+				// console.log("From here, from else if, two=three");
 			}
 			else{
 				winner=5;
-				console.log("from else");
+				// console.log("from else");
 			}
 		}
 		picture.src = "images/winners/winner"+winner+".png";
 		picture.style.width = '100%';
 		winnerDisplayArea.appendChild(picture);	
-		if(winner == 4){
-			var point = document.getElementById('pointArea');
-			playerPoints+=3000+kittyTimes*3000;
-			kittyTimes = 0;
-			point.innerHTML = playerPoints;
-			var kitty = document.getElementById('kittyArea');
-			kitty.innerHTML = kittyTimes;
+		if(that.roundThreeFirstTimeFlag == true){	
+			if(winner == 4){
+				var point = document.getElementById('pointArea');
+				if(hattrick == true){
+					playerPoints+=6000+kittyTimes*3000;
+					hattrick = false;
+				}
+				else
+					playerPoints+=6000+kittyTimes*3000;
+				kittyTimes = 0;
+				point.innerHTML = playerPoints;
+				var kitty = document.getElementById('kittyArea');
+				kitty.innerHTML = kittyTimes;
+			}
+			else if(winner == 5){
+				var kitty = document.getElementById('kittyArea');
+				kitty.innerHTML = ++kittyTimes;
+			}
+			else{
+				var point = document.getElementById('pointArea');
+				if(hattrick == true){
+					playerPoints-=2000 + kittyTimes*1000;
+					hattrick = false;
+				}
+				else
+					playerPoints-=1000 + kittyTimes*1000;
+				kittyTimes = 0;
+				point.innerHTML = playerPoints;	
+				var kitty = document.getElementById('kittyArea');
+				kitty.innerHTML = kittyTimes;
+			}
 		}
-		else if(winner == 5){
-			var kitty = document.getElementById('kittyArea');
-			kitty.innerHTML = ++kittyTimes;
-		}
-		else{
-			var point = document.getElementById('pointArea');
-			playerPoints-=1000 + kittyTimes*1000;
-			kittyTimes = 0;
-			point.innerHTML = playerPoints;	
-			var kitty = document.getElementById('kittyArea');
-			kitty.innerHTML = kittyTimes;
-		}
+
 	} 
 }
